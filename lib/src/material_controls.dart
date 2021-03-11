@@ -57,7 +57,9 @@ class _MaterialControlsState extends State<MaterialControls>
       onHover: (_) {
         _cancelAndRestartTimer();
       },
+      opaque: false,
       child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
         onTap: () => _cancelAndRestartTimer(),
         child: AbsorbPointer(
           absorbing: _hideStuff,

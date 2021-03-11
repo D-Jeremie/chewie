@@ -54,6 +54,8 @@ class _ChewieDemoState extends State<ChewieDemo> {
       videoPlayerController: _videoPlayerController1,
       autoPlay: true,
       looping: true,
+      allowZoom: true,
+      aspectRatio: 16 / 9,
       // Try playing around with some of these other options:
 
       // showControls: false,

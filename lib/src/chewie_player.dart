@@ -71,7 +71,7 @@ class ChewieState extends State<Chewie> {
   Widget build(BuildContext context) {
     return _ChewieControllerProvider(
       controller: widget.controller,
-      child: const PlayerWithControls(),
+      child: PlayerWithControls(),
     );
   }
 
@@ -111,7 +111,7 @@ class ChewieState extends State<Chewie> {
   ) {
     final controllerProvider = _ChewieControllerProvider(
       controller: widget.controller,
-      child: const PlayerWithControls(),
+      child: PlayerWithControls(),
     );
 
     if (widget.controller.routePageBuilder == null) {
@@ -225,6 +225,7 @@ class ChewieController extends ChangeNotifier {
     this.isLive = false,
     this.allowFullScreen = true,
     this.allowMuting = true,
+    this.allowZoom = false,
     this.allowPlaybackSpeedChanging = true,
     this.playbackSpeeds = const [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2],
     this.systemOverlaysOnEnterFullScreen,
@@ -242,6 +243,9 @@ class ChewieController extends ChangeNotifier {
 
   /// Initialize the Video on Startup. This will prep the video for playback.
   final bool autoInitialize;
+
+  /// Allow the user to panToZoom inside the video
+  final bool allowZoom;
 
   /// Play the video as soon as it's displayed
   final bool autoPlay;

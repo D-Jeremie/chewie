@@ -72,7 +72,9 @@ class _CupertinoControlsState extends State<CupertinoControls>
       onHover: (_) {
         _cancelAndRestartTimer();
       },
+      opaque: false,
       child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
         onTap: () {
           _cancelAndRestartTimer();
         },
