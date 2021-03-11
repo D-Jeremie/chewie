@@ -44,6 +44,7 @@ class PlayerWithControls extends StatelessWidget {
         ChewieController chewieController, BuildContext context) {
       return Stack(
         children: <Widget>[
+          chewieController.placeholder ?? Container(),
           Center(
             child: AspectRatio(
               aspectRatio: chewieController.aspectRatio ??
@@ -57,6 +58,7 @@ class PlayerWithControls extends StatelessWidget {
                   child: VideoPlayer(chewieController.videoPlayerController)),
             ),
           ),
+          chewieController.overlay ?? Container(),
           if (chewieController.allowZoom)
             Positioned(
               right: 0,
@@ -65,8 +67,6 @@ class PlayerWithControls extends StatelessWidget {
                 transformationController: _transformationController,
               ),
             ),
-          chewieController.placeholder ?? Container(),
-          chewieController.overlay ?? Container(),
           if (!chewieController.isFullScreen)
             _buildControls(context, chewieController)
           else
