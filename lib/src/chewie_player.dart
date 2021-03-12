@@ -207,6 +207,7 @@ class ChewieState extends State<Chewie> {
 class ChewieController extends ChangeNotifier {
   ChewieController({
     required this.videoPlayerController,
+    this.transformationController,
     this.aspectRatio,
     this.autoInitialize = false,
     this.autoPlay = false,
@@ -235,8 +236,12 @@ class ChewieController extends ChangeNotifier {
     this.routePageBuilder,
   }) : assert(playbackSpeeds.every((speed) => speed > 0),
             'The playbackSpeeds values must all be greater than 0') {
+    transformationController ??= TransformationController();
     _initialize();
   }
+
+  ///The controller for the zoom
+  late TransformationController? transformationController;
 
   /// The controller for the video you want to play
   final VideoPlayerController videoPlayerController;

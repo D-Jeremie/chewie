@@ -63,17 +63,24 @@ class _MaterialControlsState extends State<MaterialControls>
         onTap: () => _cancelAndRestartTimer(),
         child: AbsorbPointer(
           absorbing: _hideStuff,
-          child: Column(
-            children: <Widget>[
-              if (_latestValue.isBuffering)
-                const Expanded(
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                )
-              else
-                _buildHitArea(),
-              _buildBottomBar(context),
+          child: Stack(
+            children: [
+              Column(
+                children: <Widget>[
+                  if (_latestValue.isBuffering)
+                    const Expanded(
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    )
+                  else
+                    _buildHitArea(),
+                  _buildBottomBar(context),
+                ],
+              ),
+              if (chewieController.allowZoom)
+                Positioned(
+                    right: 0, bottom: barHeight, child: _buildSideBar(context)),
             ],
           ),
         ),
@@ -301,6 +308,84 @@ class _MaterialControlsState extends State<MaterialControls>
         '${formatDuration(position)} / ${formatDuration(duration)}',
         style: const TextStyle(
           fontSize: 14.0,
+        ),
+      ),
+    );
+  }
+
+  final double _minZoom = 1.0;
+  final double _maxZoom = 25.0;
+
+  Widget _buildZoom(Color? iconColor) {
+    if (chewieController.transformationController == null) {
+      return Container();
+    }
+
+    final TransformationController transformationController =
+        chewieController.transformationController!;
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Text(
+            "${(chewieController.transformationController!.value.getMaxScaleOnAxis() * 100).toInt()}%",
+            style: TextStyle(color: iconColor),
+          ),
+        ),
+        IconButton(
+            icon: Icon(
+              Icons.zoom_in_outlined,
+              color: iconColor,
+            ),
+            onPressed: () {
+              if (transformationController.value.getMaxScaleOnAxis() * 1.2 <=
+                  _maxZoom) {
+                scale(context, transformationController, chewieController, 1.2);
+              } else {
+                transformationController.value =
+                    Matrix4.diagonal3Values(_maxZoom, _maxZoom, _maxZoom);
+              }
+            }),
+        IconButton(
+            icon: Icon(
+              Icons.zoom_out_outlined,
+              color: iconColor,
+            ),
+            onPressed: () {
+              if (transformationController.value.getMaxScaleOnAxis() *
+                      1 /
+                      1.2 >=
+                  _minZoom) {
+                scale(context, transformationController, chewieController,
+                    1 / 1.2);
+              } else {
+                transformationController.value =
+                    Matrix4.diagonal3Values(_minZoom, _minZoom, _minZoom);
+              }
+            }),
+      ],
+    );
+  }
+
+  AnimatedOpacity _buildSideBar(
+    BuildContext context,
+  ) {
+    final iconColor = Theme.of(context).textTheme.button!.color;
+
+    return AnimatedOpacity(
+      opacity: _hideStuff ? 0.0 : 1.0,
+      duration: const Duration(milliseconds: 300),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 8.0, right: 4.0),
+        child: Material(
+          color: Theme.of(context).dialogBackgroundColor,
+          borderRadius: BorderRadius.circular(4.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              if (chewieController.allowZoom) _buildZoom(iconColor),
+            ],
+          ),
         ),
       ),
     );

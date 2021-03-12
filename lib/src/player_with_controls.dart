@@ -52,9 +52,10 @@ class PlayerWithControls extends StatelessWidget {
               child: InteractiveViewer(
                   minScale: 1.0,
                   maxScale: 25.0,
-                  transformationController: _transformationController,
+                  transformationController:
+                      chewieController.transformationController,
                   panEnabled: chewieController.allowZoom,
-                  scaleEnabled: chewieController.allowZoom,
+                  scaleEnabled: false && chewieController.allowZoom,
                   child: Stack(
                     children: [
                       VideoPlayer(chewieController.videoPlayerController),

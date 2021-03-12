@@ -55,7 +55,6 @@ class _ChewieDemoState extends State<ChewieDemo> {
       autoPlay: true,
       looping: true,
       allowZoom: true,
-      aspectRatio: 16 / 9,
       // Try playing around with some of these other options:
 
       // showControls: false,

@@ -80,12 +80,21 @@ class _CupertinoControlsState extends State<CupertinoControls>
         },
         child: AbsorbPointer(
           absorbing: _hideStuff,
-          child: Column(
-            children: <Widget>[
-              _buildTopBar(
-                  backgroundColor, iconColor, barHeight, buttonPadding),
-              _buildHitArea(),
-              _buildBottomBar(backgroundColor, iconColor, barHeight),
+          child: Stack(
+            children: [
+              Column(
+                children: <Widget>[
+                  _buildTopBar(
+                      backgroundColor, iconColor, barHeight, buttonPadding),
+                  _buildHitArea(),
+                  _buildBottomBar(backgroundColor, iconColor, barHeight),
+                ],
+              ),
+              Positioned(
+                  right: 0,
+                  bottom: barHeight + marginSize,
+                  child: _buildSideBar(
+                      context, backgroundColor, iconColor, buttonPadding)),
             ],
           ),
         ),
@@ -238,6 +247,99 @@ class _CupertinoControlsState extends State<CupertinoControls>
           isPlaying: controller.value.isPlaying,
           show: !_latestValue.isPlaying && !_dragging,
           onPressed: _playPause,
+        ),
+      ),
+    );
+  }
+
+  final double _minZoom = 1.0;
+  final double _maxZoom = 25.0;
+
+  Widget _buildZoom(Color iconColor, double buttonPadding) {
+    if (chewieController.transformationController == null) {
+      return Container();
+    }
+
+    final TransformationController transformationController =
+        chewieController.transformationController!;
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Text(
+            "${(chewieController.transformationController!.value.getMaxScaleOnAxis() * 100).toInt()}%",
+            style: TextStyle(color: iconColor),
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            if (transformationController.value.getMaxScaleOnAxis() * 1.2 <=
+                _maxZoom) {
+              scale(context, transformationController, chewieController, 1.2);
+            } else {
+              transformationController.value =
+                  Matrix4.diagonal3Values(_maxZoom, _maxZoom, _maxZoom);
+            }
+          },
+          child: Padding(
+            padding: EdgeInsets.all(buttonPadding),
+            child: Icon(
+              CupertinoIcons.zoom_in,
+              color: iconColor,
+              size: 18.0,
+            ),
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            if (transformationController.value.getMaxScaleOnAxis() * 1 / 1.2 >=
+                _minZoom) {
+              scale(
+                  context, transformationController, chewieController, 1 / 1.2);
+            } else {
+              transformationController.value =
+                  Matrix4.diagonal3Values(_minZoom, _minZoom, _minZoom);
+            }
+          },
+          child: Padding(
+            padding: EdgeInsets.all(buttonPadding),
+            child: Icon(
+              CupertinoIcons.zoom_out,
+              color: iconColor,
+              size: 18.0,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  AnimatedOpacity _buildSideBar(
+    BuildContext context,
+    Color backgroundColor,
+    Color iconColor,
+    double buttonPadding,
+  ) {
+    return AnimatedOpacity(
+      opacity: _hideStuff ? 0.0 : 1.0,
+      duration: const Duration(milliseconds: 300),
+      child: Container(
+        color: Colors.transparent,
+        alignment: Alignment.bottomCenter,
+        margin: EdgeInsets.all(marginSize),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10.0),
+          child: BackdropFilter(
+            filter: ui.ImageFilter.blur(
+              sigmaX: 10.0,
+              sigmaY: 10.0,
+            ),
+            child: Container(
+              color: backgroundColor,
+              child: _buildZoom(iconColor, buttonPadding),
+            ),
+          ),
         ),
       ),
     );
