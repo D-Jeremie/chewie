@@ -48,23 +48,20 @@ class PlayerWithControls extends StatelessWidget {
             child: AspectRatio(
               aspectRatio: chewieController.aspectRatio ??
                   chewieController.videoPlayerController.value.aspectRatio,
-              child: Container(
-                color: Colors.red,
-                child: InteractiveViewerVideoZoom(
-                    key: viewerKey,
-                    minScale: 1.0,
-                    maxScale: 25.0,
-                    transformationController:
-                        chewieController.transformationController,
-                    panEnabled: chewieController.allowZoom,
-                    scaleEnabled: true,
-                    child: Stack(
-                      children: [
-                        VideoPlayer(chewieController.videoPlayerController),
-                        chewieController.overlay ?? Container(),
-                      ],
-                    )),
-              ),
+              child: InteractiveViewerVideoZoom(
+                  key: viewerKey,
+                  minScale: 1.0,
+                  maxScale: 25.0,
+                  transformationController:
+                      chewieController.transformationController,
+                  panEnabled: chewieController.allowZoom,
+                  scaleEnabled: true,
+                  child: Stack(
+                    children: [
+                      VideoPlayer(chewieController.videoPlayerController),
+                      chewieController.overlay ?? Container(),
+                    ],
+                  )),
             ),
           ),
           if (!chewieController.isFullScreen)
