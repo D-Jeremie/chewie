@@ -4,7 +4,6 @@ import 'package:chewie/src/chewie_player.dart';
 import 'package:chewie/src/cupertino_controls.dart';
 import 'package:chewie/src/interactive_viewer_video_zoom.dart';
 import 'package:chewie/src/material_controls.dart';
-import 'package:chewie/src/utils.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -49,7 +48,6 @@ class PlayerWithControls extends StatelessWidget {
               aspectRatio: chewieController.aspectRatio ??
                   chewieController.videoPlayerController.value.aspectRatio,
               child: InteractiveViewerVideoZoom(
-                  key: viewerKey,
                   minScale: 1.0,
                   maxScale: 25.0,
                   transformationController:

@@ -38,18 +38,26 @@ String formatDuration(Duration position) {
   return formattedTime;
 }
 
-GlobalKey<InteractiveViewerVideoZoomState> viewerKey = GlobalKey();
-
 void scale(
     BuildContext context,
     TransformationControllerZoom transformationController,
     ChewieController chewieController,
     double factor) {
-  final box = viewerKey.currentContext?.findRenderObject() as RenderBox?;
+  final box = context.findRenderObject() as RenderBox?;
   if (box != null) {
     final size = box.size;
 
-    final touchZone = Offset(size.width / 2, size.width / 2);
+    final double aspectRatio = chewieController.aspectRatio ??
+        chewieController.videoPlayerController.value.aspectRatio;
+
+    Size viewSize;
+    if (size.width * 1 / aspectRatio > size.height) {
+      viewSize = Size(size.height * aspectRatio, size.height);
+    } else {
+      viewSize = Size(size.width, size.width * aspectRatio);
+    }
+
+    final touchZone = Offset(viewSize.width / 2, viewSize.height / 2);
 
     final offsetA = transformationController.toScene(touchZone);
 
@@ -61,9 +69,10 @@ void scale(
         .translate(offsetB.dx - offsetA.dx, offsetB.dy - offsetA.dy);
 
     final Offset exceed = _exceedsBy(
-        getBoundaries(Offset.zero & box.size),
-        _transformViewport(
-            transformationController.value.clone(), Offset.zero & box.size));
+      getBoundaries(Offset.zero & viewSize),
+      _transformViewport(
+          transformationController.value.clone(), Offset.zero & viewSize),
+    );
 
     if (exceed != Offset.zero) {
       transformationController.value.translate(-exceed.dx, -exceed.dy);
