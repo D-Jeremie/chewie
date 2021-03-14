@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:chewie/src/chewie_progress_colors.dart';
+import 'package:chewie/src/interactive_viewer_video_zoom.dart';
 import 'package:chewie/src/player_with_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -236,12 +237,12 @@ class ChewieController extends ChangeNotifier {
     this.routePageBuilder,
   }) : assert(playbackSpeeds.every((speed) => speed > 0),
             'The playbackSpeeds values must all be greater than 0') {
-    transformationController ??= TransformationController();
+    transformationController ??= TransformationControllerZoom();
     _initialize();
   }
 
   ///The controller for the zoom
-  late TransformationController? transformationController;
+  late TransformationControllerZoom? transformationController;
 
   /// The controller for the video you want to play
   final VideoPlayerController videoPlayerController;

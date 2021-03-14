@@ -4,6 +4,7 @@ import 'package:chewie/src/animated_play_pause.dart';
 import 'package:chewie/src/center_play_button.dart';
 import 'package:chewie/src/chewie_player.dart';
 import 'package:chewie/src/chewie_progress_colors.dart';
+import 'package:chewie/src/interactive_viewer_video_zoom.dart';
 import 'package:chewie/src/material_progress_bar.dart';
 import 'package:chewie/src/utils.dart';
 import 'package:flutter/material.dart';
@@ -321,7 +322,7 @@ class _MaterialControlsState extends State<MaterialControls>
       return Container();
     }
 
-    final TransformationController transformationController =
+    final TransformationControllerZoom transformationController =
         chewieController.transformationController!;
     return Column(
       children: [
@@ -338,7 +339,7 @@ class _MaterialControlsState extends State<MaterialControls>
               color: iconColor,
             ),
             onPressed: () {
-              if (transformationController.value.getMaxScaleOnAxis() * 1.2 <=
+              if (transformationController.value.getMaxScaleOnAxis() * 1.2 <
                   _maxZoom) {
                 scale(context, transformationController, chewieController, 1.2);
               } else {
@@ -352,9 +353,7 @@ class _MaterialControlsState extends State<MaterialControls>
               color: iconColor,
             ),
             onPressed: () {
-              if (transformationController.value.getMaxScaleOnAxis() *
-                      1 /
-                      1.2 >=
+              if (transformationController.value.getMaxScaleOnAxis() * 1 / 1.2 >
                   _minZoom) {
                 scale(context, transformationController, chewieController,
                     1 / 1.2);

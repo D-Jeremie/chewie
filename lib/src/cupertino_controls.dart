@@ -7,6 +7,7 @@ import 'package:chewie/src/center_play_button.dart';
 import 'package:chewie/src/chewie_player.dart';
 import 'package:chewie/src/chewie_progress_colors.dart';
 import 'package:chewie/src/cupertino_progress_bar.dart';
+import 'package:chewie/src/interactive_viewer_video_zoom.dart';
 import 'package:chewie/src/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -260,7 +261,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
       return Container();
     }
 
-    final TransformationController transformationController =
+    final TransformationControllerZoom transformationController =
         chewieController.transformationController!;
 
     return Column(
@@ -274,7 +275,7 @@ class _CupertinoControlsState extends State<CupertinoControls>
         ),
         GestureDetector(
           onTap: () {
-            if (transformationController.value.getMaxScaleOnAxis() * 1.2 <=
+            if (transformationController.value.getMaxScaleOnAxis() * 1.2 <
                 _maxZoom) {
               scale(context, transformationController, chewieController, 1.2);
             } else {
@@ -282,18 +283,21 @@ class _CupertinoControlsState extends State<CupertinoControls>
                   Matrix4.diagonal3Values(_maxZoom, _maxZoom, _maxZoom);
             }
           },
-          child: Padding(
-            padding: EdgeInsets.all(buttonPadding),
-            child: Icon(
-              CupertinoIcons.zoom_in,
-              color: iconColor,
-              size: 18.0,
+          child: Container(
+            color: Colors.transparent,
+            child: Padding(
+              padding: EdgeInsets.all(buttonPadding),
+              child: Icon(
+                CupertinoIcons.zoom_in,
+                color: iconColor,
+                size: 18.0,
+              ),
             ),
           ),
         ),
         GestureDetector(
           onTap: () {
-            if (transformationController.value.getMaxScaleOnAxis() * 1 / 1.2 >=
+            if (transformationController.value.getMaxScaleOnAxis() * 1 / 1.2 >
                 _minZoom) {
               scale(
                   context, transformationController, chewieController, 1 / 1.2);
@@ -302,12 +306,15 @@ class _CupertinoControlsState extends State<CupertinoControls>
                   Matrix4.diagonal3Values(_minZoom, _minZoom, _minZoom);
             }
           },
-          child: Padding(
-            padding: EdgeInsets.all(buttonPadding),
-            child: Icon(
-              CupertinoIcons.zoom_out,
-              color: iconColor,
-              size: 18.0,
+          child: Container(
+            color: Colors.transparent,
+            child: Padding(
+              padding: EdgeInsets.all(buttonPadding),
+              child: Icon(
+                CupertinoIcons.zoom_out,
+                color: iconColor,
+                size: 18.0,
+              ),
             ),
           ),
         ),
