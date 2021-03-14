@@ -125,11 +125,6 @@ Offset _exceedsBy(Quad boundary, Quad viewport) {
     viewport.point3,
   ];
 
-  print(
-      "boundary = ${boundary.point0},${boundary.point1},${boundary.point2},${boundary.point3}");
-  print(
-      "viewport = ${viewport.point0}, ${viewport.point1}, ${viewport.point2}, ${viewport.point3}");
-
   Offset largestExcess = Offset.zero;
   for (final Vector3 point in viewportPoints) {
     final Vector3 pointInside =
