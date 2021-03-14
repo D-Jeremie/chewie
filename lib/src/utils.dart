@@ -54,7 +54,7 @@ void scale(
     if (size.width * 1 / aspectRatio > size.height) {
       viewSize = Size(size.height * aspectRatio, size.height);
     } else {
-      viewSize = Size(size.width, size.width * aspectRatio);
+      viewSize = Size(size.width, size.width * 1 / aspectRatio);
     }
 
     final touchZone = Offset(viewSize.width / 2, viewSize.height / 2);
