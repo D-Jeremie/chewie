@@ -53,7 +53,6 @@ class PlayerWithControls extends StatelessWidget {
                   transformationController:
                       chewieController.transformationController,
                   panEnabled: chewieController.allowZoom,
-                  scaleEnabled: true,
                   child: Stack(
                     children: [
                       VideoPlayer(chewieController.videoPlayerController),

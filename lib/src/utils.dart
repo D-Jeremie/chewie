@@ -112,17 +112,6 @@ Quad getBoundaries(Rect rect) {
     Vector3(rect.right, rect.bottom, 0.0),
     Vector3(rect.left, rect.bottom, 0.0),
   );
-
-  final Matrix4 rotationMatrix = Matrix4.identity()
-    ..translate(rect.size.width / 2, rect.size.height / 2)
-    ..translate(-rect.size.width / 2, -rect.size.height / 2);
-
-  return Quad.points(
-    rotationMatrix.transform3(Vector3(rect.left, rect.top, 0.0)),
-    rotationMatrix.transform3(Vector3(rect.right, rect.top, 0.0)),
-    rotationMatrix.transform3(Vector3(rect.right, rect.bottom, 0.0)),
-    rotationMatrix.transform3(Vector3(rect.left, rect.bottom, 0.0)),
-  );
 }
 
 Offset _exceedsBy(Quad boundary, Quad viewport) {

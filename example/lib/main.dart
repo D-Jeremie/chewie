@@ -27,7 +27,7 @@ class _ChewieDemoState extends State<ChewieDemo> {
   late VideoPlayerController _videoPlayerController2;
   ChewieController? _chewieController;
 
-  UniqueKey _playerKey = UniqueKey();
+  final UniqueKey _playerKey = UniqueKey();
 
   @override
   void initState() {
@@ -56,8 +56,6 @@ class _ChewieDemoState extends State<ChewieDemo> {
       videoPlayerController: _videoPlayerController1,
       autoPlay: true,
       looping: true,
-      autoInitialize: false,
-      allowFullScreen: true,
       allowZoom: true,
       // Try playing around with some of these other options:
 
@@ -116,7 +114,7 @@ class _ChewieDemoState extends State<ChewieDemo> {
                               color: Colors.blueAccent,
                               child: Column(
                                 children: [
-                                  Text("Column"),
+                                  const Text("Column"),
                                   Expanded(
                                     child: Chewie(
                                       key: _playerKey,
