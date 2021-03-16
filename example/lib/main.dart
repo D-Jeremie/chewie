@@ -27,6 +27,8 @@ class _ChewieDemoState extends State<ChewieDemo> {
   late VideoPlayerController _videoPlayerController2;
   ChewieController? _chewieController;
 
+  UniqueKey _playerKey = UniqueKey();
+
   @override
   void initState() {
     super.initState();
@@ -54,6 +56,8 @@ class _ChewieDemoState extends State<ChewieDemo> {
       videoPlayerController: _videoPlayerController1,
       autoPlay: true,
       looping: true,
+      autoInitialize: false,
+      allowFullScreen: true,
       allowZoom: true,
       // Try playing around with some of these other options:
 
@@ -79,113 +83,143 @@ class _ChewieDemoState extends State<ChewieDemo> {
       theme: ThemeData.light().copyWith(
         platform: _platform ?? Theme.of(context).platform,
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-        ),
-        body: Column(
-          children: <Widget>[
-            Expanded(
-              child: Center(
-                child: _chewieController != null &&
-                        _chewieController!
-                            .videoPlayerController.value.isInitialized
-                    ? Chewie(
-                        controller: _chewieController!,
-                      )
-                    : Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          CircularProgressIndicator(),
-                          SizedBox(height: 20),
-                          Text('Loading'),
-                        ],
-                      ),
+      home: Builder(builder: (context) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(widget.title),
+          ),
+          body: Column(
+            children: <Widget>[
+              Expanded(
+                child: Center(
+                  child: _chewieController != null &&
+                          _chewieController!
+                              .videoPlayerController.value.isInitialized
+                      ? MediaQuery.of(context).size.width > 700
+                          ? Container(
+                              color: Colors.red,
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Chewie(
+                                        key: _playerKey,
+                                        controller: _chewieController!,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : Container(
+                              color: Colors.blueAccent,
+                              child: Column(
+                                children: [
+                                  Text("Column"),
+                                  Expanded(
+                                    child: Chewie(
+                                      key: _playerKey,
+                                      controller: _chewieController!,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                      : Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            CircularProgressIndicator(),
+                            SizedBox(height: 20),
+                            Text('Loading'),
+                          ],
+                        ),
+                ),
               ),
-            ),
-            TextButton(
-              onPressed: () {
-                _chewieController!.enterFullScreen();
-              },
-              child: const Text('Fullscreen'),
-            ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _chewieController!.dispose();
-                        _videoPlayerController1.pause();
-                        _videoPlayerController1.seekTo(const Duration());
-                        _chewieController = ChewieController(
-                          videoPlayerController: _videoPlayerController1,
-                          autoPlay: true,
-                          looping: true,
-                        );
-                      });
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16.0),
-                      child: Text("Landscape Video"),
+              TextButton(
+                onPressed: () {
+                  _chewieController!.enterFullScreen();
+                },
+                child: const Text('Fullscreen'),
+              ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _chewieController!.dispose();
+                          _videoPlayerController1.pause();
+                          _videoPlayerController1.seekTo(const Duration());
+                          _chewieController = ChewieController(
+                            videoPlayerController: _videoPlayerController1,
+                            autoPlay: true,
+                            looping: true,
+                          );
+                        });
+                      },
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        child: Text("Landscape Video"),
+                      ),
                     ),
                   ),
-                ),
-                Expanded(
-                  child: TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _chewieController!.dispose();
-                        _videoPlayerController2.pause();
-                        _videoPlayerController2.seekTo(const Duration());
-                        _chewieController = ChewieController(
-                          videoPlayerController: _videoPlayerController2,
-                          autoPlay: true,
-                          looping: true,
-                        );
-                      });
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16.0),
-                      child: Text("Portrait Video"),
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _chewieController!.dispose();
+                          _videoPlayerController2.pause();
+                          _videoPlayerController2.seekTo(const Duration());
+                          _chewieController = ChewieController(
+                            videoPlayerController: _videoPlayerController2,
+                            autoPlay: true,
+                            looping: true,
+                          );
+                        });
+                      },
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        child: Text("Portrait Video"),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _platform = TargetPlatform.android;
+                        });
+                      },
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        child: Text("Android controls"),
+                      ),
                     ),
                   ),
-                )
-              ],
-            ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _platform = TargetPlatform.android;
-                      });
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16.0),
-                      child: Text("Android controls"),
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _platform = TargetPlatform.iOS;
+                        });
+                      },
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        child: Text("iOS controls"),
+                      ),
                     ),
-                  ),
-                ),
-                Expanded(
-                  child: TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _platform = TargetPlatform.iOS;
-                      });
-                    },
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16.0),
-                      child: Text("iOS controls"),
-                    ),
-                  ),
-                )
-              ],
-            )
-          ],
-        ),
-      ),
+                  )
+                ],
+              )
+            ],
+          ),
+        );
+      }),
     );
   }
 }

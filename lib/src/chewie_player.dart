@@ -41,6 +41,7 @@ class ChewieState extends State<Chewie> {
   @override
   void initState() {
     super.initState();
+    _isFullScreen = widget.controller.isFullScreen;
     widget.controller.addListener(listener);
   }
 
@@ -72,7 +73,7 @@ class ChewieState extends State<Chewie> {
   Widget build(BuildContext context) {
     return _ChewieControllerProvider(
       controller: widget.controller,
-      child: PlayerWithControls(),
+      child: const PlayerWithControls(),
     );
   }
 
@@ -112,7 +113,7 @@ class ChewieState extends State<Chewie> {
   ) {
     final controllerProvider = _ChewieControllerProvider(
       controller: widget.controller,
-      child: PlayerWithControls(),
+      child: const PlayerWithControls(),
     );
 
     if (widget.controller.routePageBuilder == null) {
@@ -135,6 +136,7 @@ class ChewieState extends State<Chewie> {
     }
 
     await Navigator.of(context, rootNavigator: true).push(route);
+
     _isFullScreen = false;
     widget.controller.exitFullScreen();
 
