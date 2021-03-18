@@ -27,8 +27,7 @@ class _ChewieDemoState extends State<ChewieDemo> {
   late VideoPlayerController _videoPlayerController2;
   ChewieController? _chewieController;
 
-  final UniqueKey _playerKey = UniqueKey();
-
+  bool play = false;
   @override
   void initState() {
     super.initState();
@@ -44,14 +43,19 @@ class _ChewieDemoState extends State<ChewieDemo> {
   }
 
   Future<void> initializePlayer() async {
+    print("Init");
     _videoPlayerController1 = VideoPlayerController.network(
         'https://assets.mixkit.co/videos/preview/mixkit-forest-stream-in-the-sunlight-529-large.mp4');
     _videoPlayerController2 = VideoPlayerController.network(
         'https://assets.mixkit.co/videos/preview/mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement-park-1226-large.mp4');
+    /**/
+    /*
     await Future.wait([
       _videoPlayerController1.initialize(),
       _videoPlayerController2.initialize()
-    ]);
+    ]);*/
+
+    await _videoPlayerController1.initialize();
     _chewieController = ChewieController(
       videoPlayerController: _videoPlayerController1,
       autoPlay: true,
@@ -71,7 +75,13 @@ class _ChewieDemoState extends State<ChewieDemo> {
       // ),
       // autoInitialize: true,
     );
-    setState(() {});
+    if (_chewieController != null &&
+        _chewieController!.videoPlayerController.value.isInitialized) {
+      play = true;
+    }
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -90,40 +100,16 @@ class _ChewieDemoState extends State<ChewieDemo> {
             children: <Widget>[
               Expanded(
                 child: Center(
-                  child: _chewieController != null &&
-                          _chewieController!
-                              .videoPlayerController.value.isInitialized
-                      ? MediaQuery.of(context).size.width > 700
-                          ? Container(
-                              color: Colors.red,
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Chewie(
-                                        key: _playerKey,
-                                        controller: _chewieController!,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                  child: play
+                      ? Row(
+                          children: [
+                            Flexible(
+                              child: Chewie(
+                                controller: _chewieController!,
                               ),
-                            )
-                          : Container(
-                              color: Colors.blueAccent,
-                              child: Column(
-                                children: [
-                                  const Text("Column"),
-                                  Expanded(
-                                    child: Chewie(
-                                      key: _playerKey,
-                                      controller: _chewieController!,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
+                            ),
+                          ],
+                        )
                       : Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: const [
@@ -139,6 +125,12 @@ class _ChewieDemoState extends State<ChewieDemo> {
                   _chewieController!.enterFullScreen();
                 },
                 child: const Text('Fullscreen'),
+              ),
+              TextButton(
+                onPressed: () {
+                  initializePlayer();
+                },
+                child: const Text('Reload'),
               ),
               Row(
                 children: <Widget>[

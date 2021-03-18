@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:chewie/src/chewie_progress_colors.dart';
 import 'package:chewie/src/interactive_viewer_video_zoom.dart';
 import 'package:chewie/src/player_with_controls.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -42,6 +43,7 @@ class ChewieState extends State<Chewie> {
   void initState() {
     super.initState();
     _isFullScreen = widget.controller.isFullScreen;
+    print("Init isFullScreen = $_isFullScreen");
     widget.controller.addListener(listener);
   }
 
@@ -60,10 +62,12 @@ class ChewieState extends State<Chewie> {
   }
 
   Future<void> listener() async {
+    print("listener : $_isFullScreen");
     if (widget.controller.isFullScreen && !_isFullScreen) {
       _isFullScreen = true;
       await _pushFullScreenWidget(context);
     } else if (_isFullScreen) {
+      print("popping");
       Navigator.of(context, rootNavigator: true).pop();
       _isFullScreen = false;
     }
@@ -73,7 +77,7 @@ class ChewieState extends State<Chewie> {
   Widget build(BuildContext context) {
     return _ChewieControllerProvider(
       controller: widget.controller,
-      child: const PlayerWithControls(),
+      child: PlayerWithControls(),
     );
   }
 
@@ -113,7 +117,7 @@ class ChewieState extends State<Chewie> {
   ) {
     final controllerProvider = _ChewieControllerProvider(
       controller: widget.controller,
-      child: const PlayerWithControls(),
+      child: PlayerWithControls(),
     );
 
     if (widget.controller.routePageBuilder == null) {
@@ -135,7 +139,55 @@ class ChewieState extends State<Chewie> {
       Wakelock.enable();
     }
 
-    await Navigator.of(context, rootNavigator: true).push(route);
+    if (kIsWeb) {
+      final videoPlayer = VideoPlayerController.network(
+          widget.controller.videoPlayerController.dataSource);
+      await videoPlayer.initialize();
+
+      final position = await widget.controller.videoPlayerController.position;
+      if (position != null) {
+        videoPlayer.seekTo(position);
+      }
+
+      final controller = widget.controller
+          .copyWith(videoPlayer, autoPlay: widget.controller.isPlaying);
+      controller.setFullScreen = true;
+      final controllerProvider = _ChewieControllerProvider(
+        controller: controller,
+        child: Chewie(
+          controller: controller,
+        ),
+      );
+
+      await showGeneralDialog(
+          context: context,
+          pageBuilder: (context, _, __) {
+            return Opacity(
+              opacity: 1,
+              child: Scaffold(
+                resizeToAvoidBottomInset: false,
+                body: Container(
+                  alignment: Alignment.center,
+                  color: Colors.black,
+                  child: controllerProvider,
+                ),
+              ),
+            );
+          }).then((value) async {
+        final position = await videoPlayer.position;
+        if (position != null) {
+          widget.controller.seekTo(position);
+        }
+
+        if (controllerProvider.controller.isPlaying) {
+          widget.controller.play();
+        } else {
+          widget.controller.pause();
+        }
+      });
+    } else {
+      await Navigator.of(context, rootNavigator: true).push(route);
+    }
 
     _isFullScreen = false;
     widget.controller.exitFullScreen();
@@ -243,6 +295,40 @@ class ChewieController extends ChangeNotifier {
     _initialize();
   }
 
+  ChewieController copyWith(VideoPlayerController controller,
+      {bool? autoPlay}) {
+    return ChewieController(
+      videoPlayerController: controller,
+      transformationController: transformationController,
+      aspectRatio: aspectRatio,
+      autoInitialize: autoInitialize,
+      autoPlay: autoPlay ?? this.autoPlay,
+      startAt: startAt,
+      looping: looping,
+      fullScreenByDefault: fullScreenByDefault,
+      cupertinoProgressColors: cupertinoProgressColors,
+      materialProgressColors: materialProgressColors,
+      placeholder: placeholder,
+      overlay: overlay,
+      showControlsOnInitialize: showControlsOnInitialize,
+      showControls: showControls,
+      customControls: customControls,
+      errorBuilder: errorBuilder,
+      allowedScreenSleep: allowedScreenSleep,
+      isLive: isLive,
+      allowFullScreen: allowFullScreen,
+      allowMuting: allowMuting,
+      allowZoom: allowZoom,
+      allowPlaybackSpeedChanging: allowPlaybackSpeedChanging,
+      playbackSpeeds: playbackSpeeds,
+      systemOverlaysOnEnterFullScreen: systemOverlaysOnEnterFullScreen,
+      deviceOrientationsOnEnterFullScreen: deviceOrientationsOnEnterFullScreen,
+      systemOverlaysAfterFullScreen: systemOverlaysAfterFullScreen,
+      deviceOrientationsAfterFullScreen: deviceOrientationsAfterFullScreen,
+      routePageBuilder: routePageBuilder,
+    );
+  }
+
   ///The controller for the zoom
   late TransformationControllerZoom? transformationController;
 
@@ -346,6 +432,8 @@ class ChewieController extends ChangeNotifier {
   bool _isFullScreen = false;
 
   bool get isFullScreen => _isFullScreen;
+
+  set setFullScreen(bool value) => _isFullScreen = value;
 
   bool get isPlaying => videoPlayerController.value.isPlaying;
 
