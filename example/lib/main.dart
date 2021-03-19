@@ -43,7 +43,6 @@ class _ChewieDemoState extends State<ChewieDemo> {
   }
 
   Future<void> initializePlayer() async {
-    print("Init");
     _videoPlayerController1 = VideoPlayerController.network(
         'https://assets.mixkit.co/videos/preview/mixkit-forest-stream-in-the-sunlight-529-large.mp4');
     _videoPlayerController2 = VideoPlayerController.network(

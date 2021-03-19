@@ -43,7 +43,6 @@ class ChewieState extends State<Chewie> {
   void initState() {
     super.initState();
     _isFullScreen = widget.controller.isFullScreen;
-    print("Init isFullScreen = $_isFullScreen");
     widget.controller.addListener(listener);
   }
 
@@ -62,12 +61,10 @@ class ChewieState extends State<Chewie> {
   }
 
   Future<void> listener() async {
-    print("listener : $_isFullScreen");
     if (widget.controller.isFullScreen && !_isFullScreen) {
       _isFullScreen = true;
       await _pushFullScreenWidget(context);
     } else if (_isFullScreen) {
-      print("popping");
       Navigator.of(context, rootNavigator: true).pop();
       _isFullScreen = false;
     }
@@ -149,9 +146,13 @@ class ChewieState extends State<Chewie> {
         videoPlayer.seekTo(position);
       }
 
+      videoPlayer.setPlaybackSpeed(
+          widget.controller.videoPlayerController.value.playbackSpeed);
+
       final controller = widget.controller
           .copyWith(videoPlayer, autoPlay: widget.controller.isPlaying);
       controller.setFullScreen = true;
+
       final controllerProvider = _ChewieControllerProvider(
         controller: controller,
         child: Chewie(
@@ -162,19 +163,23 @@ class ChewieState extends State<Chewie> {
       await showGeneralDialog(
           context: context,
           pageBuilder: (context, _, __) {
-            return Opacity(
-              opacity: 1,
-              child: Scaffold(
-                resizeToAvoidBottomInset: false,
-                body: Container(
-                  alignment: Alignment.center,
-                  color: Colors.black,
-                  child: controllerProvider,
-                ),
+            return Scaffold(
+              resizeToAvoidBottomInset: false,
+              body: Container(
+                alignment: Alignment.center,
+                color: Colors.black,
+                child: controllerProvider,
               ),
             );
           }).then((value) async {
         final position = await videoPlayer.position;
+
+        if (videoPlayer.value.playbackSpeed !=
+            widget.controller.videoPlayerController.value.playbackSpeed) {
+          widget.controller.videoPlayerController
+              .setPlaybackSpeed(videoPlayer.value.playbackSpeed);
+        }
+
         if (position != null) {
           widget.controller.seekTo(position);
         }
